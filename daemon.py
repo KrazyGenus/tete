@@ -1,37 +1,42 @@
 #!/usr/bin/env python3
+
 import datetime
 import time
+import threading
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-# from collections import deque
-
-# while True:
-#     # hour_time_stamps_queue = deque([12, 14, 16, 22])
-#     # if datetime.datetime.now().hour in hour_time_stamps_queue:
-#     #     current_hour = hour_time_stamps_queue.popleft()
-#     #     hour_time_stamps_queue.append(current_hour)
-#     print(datetime.datetime.now().hour)
-#     time.sleep(3600)
-# 
-# 
-def my_task():
-    print("Task is being executed.....")
+from user_prompt import main, update_job_time
+from collections import deque
 
 
-# initialize the scheduleer
-scheduler = BackgroundScheduler()
-scheduler.add_job(my_task, 'cron', hour=19, minute=57, id="daily_task", max_instances=1)
+def run_main_in_thread(scheduler_instance, message):
+    """Runs main() in a separate thread to avoid blocking execution."""
+    main_thread = threading.Thread(target=main, args=(scheduler_instance, message), daemon=True)
+    main_thread.start()
 
 
-def update_job_time(scheduler, job_id, new_hour, new_minute):
-    """Modiying the existing job to run a new time"""
-    scheduler.modify_job(
-        job_id = job_id,
-        trigger=CronTrigger(hour=new_hour, minute=new_minute)
-    )
-try:
-    while True:
-        time.sleep(10)  # Keep script running
-except (KeyboardInterrupt, SystemExit):
-    scheduler.shutdown()
-    print("Scheduler stopped.")
+scheduler_instance = BackgroundScheduler()
+job = scheduler_instance.get_job("user_prompt")
+
+"""
+I designed the scheduler as a singleton by instantiating it outside the loop. 
+This ensures that we have a single instance managing all scheduled jobs dynamically, 
+preventing redundant instances from being created on each iteration. 
+This approach maintains state across loop iterations, avoids unnecessary resource usage, 
+and allows job scheduling modifications to persist within the same instance.
+"""
+while True:
+    hour_to_ask_for_tweet = deque([12, 14, 16, 22])
+    hour_to_process_and_send_tweet = deque([15, 18, 23])
+
+    if datetime.datetime.now().hour in hour_to_ask_for_tweet:
+        current_hour = hour_to_ask_for_tweet.popleft()
+        hour_to_ask_for_tweet.append(current_hour)
+        update_job_time(scheduler=scheduler_instance, job_id="user_prompt", new_hour=current_hour, new_minute=0)
+    if not job:
+        run_main_in_thread(scheduler_instance, "Hello from a black hole!")
+    else:
+        print(f"Job exists. Next run time: {job.next_run_time}")
+
+    print("Cthulhu has slept a dreamless sleep")
+    time.sleep(3600)  # Wait for 1 hour before checking again
+    print("I have awakened! Mortal")

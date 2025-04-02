@@ -2,9 +2,8 @@
 import questionary
 from questionary import Style
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 import time
-import datetime
 
 def prompt_user_taks():
     custom_style_fancy = Style([
@@ -25,23 +24,21 @@ def prompt_user_taks():
     print(f"Heres whats on my mind: {answer} and it's types id {type(answer)}")
 
 
-def main():
-    bg_job = BackgroundScheduler()
-    bg_job.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=20, minute=30, max_instances=1)
-    bg_job.start()
+def update_job_time(scheduler, job_id, new_hour, new_minute):
+    scheduler.modify_job(
+        job_id = job_id,
+        trigger=CronTrigger(hour=new_hour, minute=new_minute)
+    )
+
+def main(scheduler_instance, message):
+    scheduler_instance.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=23, minute=7, id="user_prompt", max_instances=1)
+    scheduler_instance.start()
     
-    print("Scheduler started. Press CTRL + C to exit.")
+    print(f"Scheduler started. Press CTRL + C to exit. with the message {message}")
     
     try:
         while True:
             time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
-        bg_job.shutdown()
+        scheduler_instance.shutdown()
         print("Scheduler stopped.")
-
-
-
-if __name__ == "__main__":
-    # current_hour = datetime.datetime.now()
-    # print('Current time:', current_hour.hour)
-    main()
