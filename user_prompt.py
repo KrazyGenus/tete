@@ -4,6 +4,7 @@ from questionary import Style
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
+import datetime
 
 def prompt_user_taks():
     custom_style_fancy = Style([
@@ -24,10 +25,9 @@ def prompt_user_taks():
     print(f"Heres whats on my mind: {answer} and it's types id {type(answer)}")
 
 
-
-if __name__ == "__main__":
+def main():
     bg_job = BackgroundScheduler()
-    bg_job.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=12, minute=45, max_instances=1)
+    bg_job.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=20, minute=30, max_instances=1)
     bg_job.start()
     
     print("Scheduler started. Press CTRL + C to exit.")
@@ -38,3 +38,10 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         bg_job.shutdown()
         print("Scheduler stopped.")
+
+
+
+if __name__ == "__main__":
+    # current_hour = datetime.datetime.now()
+    # print('Current time:', current_hour.hour)
+    main()
