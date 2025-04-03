@@ -7,6 +7,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from user_prompt import main, update_job_time
 from collections import deque
 
+scheduler_instance = BackgroundScheduler()
+job = scheduler_instance.get_job("user_prompt")
+tweets = {}
+
+
 
 def run_main_in_thread(scheduler_instance, message):
     """Runs main() in a separate thread to avoid blocking execution."""
@@ -14,8 +19,7 @@ def run_main_in_thread(scheduler_instance, message):
     main_thread.start()
 
 
-scheduler_instance = BackgroundScheduler()
-job = scheduler_instance.get_job("user_prompt")
+
 
 """
 I designed the scheduler as a singleton by instantiating it outside the loop. 
@@ -39,4 +43,4 @@ while True:
 
     print("Cthulhu has slept a dreamless sleep")
     time.sleep(3600)  # Wait for 1 hour before checking again
-    print("I have awakened! Mortal")
+    print("I have awakened! Mortals")
