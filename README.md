@@ -1,4 +1,4 @@
-# tete
+# Tete
 
 **Tete** is not just a name, but a deeply personal and symbolic connection. This program was created in her honor and as a tribute to a love that has shaped my heart and mind. The name *Tete* is a reminder a light: it is a reminder of the journey i’ve been on, the lessons learned, and the dreams yet to fulfill.
 
