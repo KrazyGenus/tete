@@ -28,12 +28,12 @@ def prompt_user_taks(tweets:list):
 
 def update_job_time(scheduler, job_id, new_hour, new_minute):
     scheduler.modify_job(
-        job_id = job_id,
+
         trigger=CronTrigger(hour=new_hour, minute=new_minute)
     )
 
 def main(scheduler_instance, message:str, tweets:list):
-    scheduler_instance.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=14, minute=2, id="user_prompt", args=[tweets], max_instances=1)
+    scheduler_instance.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=5, minute=40, id="user_prompt", args=[tweets], max_instances=1)
     scheduler_instance.start()
     
     print(f"Scheduler started. Press CTRL + C to exit. with the message {message}")
