@@ -3,7 +3,6 @@ import questionary
 from questionary import Style
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from apscheduler.triggers.cron import CronTrigger
-
 import time
 
 def prompt_user_taks(tweets:list):
@@ -26,18 +25,38 @@ def prompt_user_taks(tweets:list):
     tweets.append({'tweet':answer,'score': 0}) # All tweet will start with a score of 0 to be increased by the LLM
 
 
+
 def update_job_time(scheduler, job_id, new_hour, new_minute):
-    scheduler.modify_job(
+    """Update the scheduled job's execution time."""
+    print("i am called")
+    job = scheduler.get_job(job_id)
+    if job:
+        print(f"Updating job {job_id} to run at {new_hour}:{new_minute}")
+        job.reschedule(trigger='cron', hour=new_hour, minute=new_minute)
+    # scheduler.modify_job(
+    #     job_id=job_id,  # Specify which job to modify
+    #     trigger=CronTrigger(hour=new_hour, minute=new_minute)
+    # )
 
-        trigger=CronTrigger(hour=new_hour, minute=new_minute)
+def main(scheduler_instance, message: str, tweets: list):
+    """Starts the scheduler and schedules the user prompt job."""
+    
+    # Add or replace the job dynamically
+    scheduler_instance.add_job(
+        prompt_user_taks, 
+        trigger=CronTrigger(day_of_week='mon-sun', hour=12, minute=47),
+        id="user_prompt", 
+        args=[tweets], 
+        max_instances=1,
+        replace_existing=True  # ✅ No need to remove job manually
     )
-
-def main(scheduler_instance, message:str, tweets:list):
-    scheduler_instance.add_job(prompt_user_taks, 'cron', day_of_week='mon-sun', hour=5, minute=40, id="user_prompt", args=[tweets], max_instances=1)
-    scheduler_instance.start()
-    
-    print(f"Scheduler started. Press CTRL + C to exit. with the message {message}")
-    
+    # runs the scheduler only when it's not already running
+    if not scheduler_instance.running:
+        scheduler_instance.start()
+        print(f"Scheduler started. Press CTRL + C to exit.")
+    else:
+        print("Scheduler started Already Running BRo!")
+  
     try:
         while True:
             time.sleep(1)
