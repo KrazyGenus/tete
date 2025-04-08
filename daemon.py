@@ -13,16 +13,10 @@ import asyncio
 
 scheduler_instance = BackgroundScheduler()
 job = scheduler_instance.get_job("user_prompt")
-tweets = [] # A list of dict containg the tweets with schema
-hour_to_ask_for_tweet = deque([12, 13, 14, 16, 22])
-hour_to_process_and_send_tweet = deque([15, 18, 23])
+tweets = []
+hour_to_ask_for_tweet = deque([10, 13, 16, 22])
+hour_to_process_and_send_tweet = deque([15, 23])
 
-"""
-{
-   tweet: '',
-   score: 0
-}
-"""
 
 
 
@@ -75,14 +69,14 @@ while True:
         if len(tweets) == 0:
             fallback_tweet()
         else:
-            tweet_handler()
+            tweet_handler('not yet')
     #run_send_tweet(tweets)
     
     print("Cthulhu has slept a dreamless sleep 😪")
     """
     FEATURE NEED TO BE IMPEMENTED CHECK IT OUT
-    """"
+    """
     #the sleep needs to be changed, only runing after the changed time has also run out
     #i realized it was changing beaucse the instance of bg work is still up
-    time.sleep(180)
+    time.sleep(3600)
     print("I have awakened! Mortals 🐦‍🔥")

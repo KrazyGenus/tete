@@ -21,9 +21,8 @@ def prompt_user_taks(tweets:list):
 
     question = questionary.text("What's on your mind ?", style=custom_style_fancy)
     answer = question.ask()
-    print(f"Heres whats on my mind: {answer} and it's types id {type(answer)}")
-    tweets.append({'tweet':answer,'score': 0}) # All tweet will start with a score of 0 to be increased by the LLM
-
+    print(f"Heres whats on my mind: {answer}")
+    tweets.append(answer)
 
 
 def update_job_time(scheduler, job_id, new_hour, new_minute):
